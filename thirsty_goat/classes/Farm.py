@@ -60,6 +60,11 @@ class FarmMap(object):
         loc = tuple([a[0] for a in out_tuple_arrays])
         return(loc)
         
+    def find_fountain(self):
+        out_tuple_arrays = np.nonzero(contains_unit(self._layout, Characters.Fountain))
+        loc = tuple([a[0] for a in out_tuple_arrays])
+        return(loc)
+        
     def find_possible_directions(self):
         current_location = self.find_player()
         possible_directions = []

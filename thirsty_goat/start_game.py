@@ -1,6 +1,6 @@
 import os
 import pygame
-from classes import Farm, Characters
+from classes import Farm, Characters, Exceptions
 
 play = True
 
@@ -43,6 +43,7 @@ pygame.display.set_caption("Thirsty Goat!")
 # Loop until the user clicks the close button.
 done = False
 won = False
+found = False
 
 # Used to manage how fast the screen updates
 clock = pygame.time.Clock()
@@ -53,6 +54,7 @@ data_dir = os.path.join(main_dir, 'data')
 
 goat = pygame.image.load('data/goat-100x100.png')
 water = pygame.image.load('data/water-100x95.png')
+rival = pygame.image.load('data/rival-72x100.png')
     
 while not done:
     while not won:
@@ -75,7 +77,9 @@ while not done:
                 if next_dir:
                     try:
                         current_farm.move(next_dir)
-                    except OverflowError:
+                    except Exceptions.RivalError:
+                        found = True
+                    except Exceptions.FountainError:
                         won = True
      
         # Set the screen background
@@ -96,6 +100,12 @@ while not done:
                                        (MARGIN + HEIGHT) * row + MARGIN,
                                        WIDTH,
                                        HEIGHT])
+        if found:
+            rival_loc = current_farm.find_rival()
+            screen.blit(rival, [(MARGIN + WIDTH) * rival_loc[0] + MARGIN + (WIDTH - 72) / 2,
+                                (MARGIN + HEIGHT) * rival_loc[1] + MARGIN,
+                                WIDTH,
+                                HEIGHT])   
         if won:
             fountain_loc = current_farm.find_fountain()
             screen.blit(water, [(MARGIN + WIDTH) * fountain_loc[0] + MARGIN,

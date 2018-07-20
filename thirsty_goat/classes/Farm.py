@@ -1,4 +1,4 @@
-from . import Characters
+from . import Characters, Exceptions
 
 import numpy as np
 
@@ -38,6 +38,7 @@ class FarmMap(object):
         
         # Fill in layout
         self._layout[self._start].update_unit(Characters.Player())
+        self._layout[(1, 1)].update_unit(Characters.Rival())
         self._layout[self._end].update_unit(Characters.Fountain())
         self.outcome = None
     
@@ -62,6 +63,11 @@ class FarmMap(object):
         
     def find_fountain(self):
         out_tuple_arrays = np.nonzero(contains_unit(self._layout, Characters.Fountain))
+        loc = tuple([a[0] for a in out_tuple_arrays])
+        return(loc)
+        
+    def find_rival(self):
+        out_tuple_arrays = np.nonzero(contains_unit(self._layout, Characters.Rival))
         loc = tuple([a[0] for a in out_tuple_arrays])
         return(loc)
         
@@ -101,8 +107,12 @@ class FarmMap(object):
         if self._layout[new_tile]._unit is None:
             self._layout[new_tile].update_unit(self._layout[current_tile]._unit)
             self._layout[current_tile].update_unit(None)
-        else:
-            raise OverflowError("You found it!")
+        elif isinstance(self._layout[new_tile]._unit, Characters.Fountain):
+            self._layout[new_tile]._unit._discovered = True
+            raise Exceptions.FountainError()
+        elif isinstance(self._layout[new_tile]._unit, Characters.Rival):
+            self._layout[new_tile]._unit._discovered = True
+            raise Exceptions.RivalError()
         return            
         
 #x = FarmMap()

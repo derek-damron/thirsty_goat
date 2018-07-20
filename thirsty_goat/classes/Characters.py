@@ -7,3 +7,8 @@ class Fountain(object):
         self.discovered = discovered
         return
  
+class Rival(object):
+    def __init__(self, discovered = False):
+        self.discovered = discovered
+        return
+ 

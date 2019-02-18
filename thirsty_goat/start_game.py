@@ -1,14 +1,12 @@
 import os
 import pygame
-from classes import Farm, Characters, Exceptions
+
+import Player
+import Fountain
+import Rival
+import Farm
 
 play = True
-
-#def get_input_continue(farm):
-#    prompt_str = "Current map:\n" + \
-#                 str(farm) + "\n" * 2 + \
-#                "Which way would you like to go? (" + ", ".join(farm.find_possible_directions()) + "): "
-#    return input(prompt_str)
 
 current_farm = Farm.FarmMap()
 
@@ -17,10 +15,11 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
+FARMGREEN = (160, 219, 57)
  
 # This sets the WIDTH and HEIGHT of each grid location
-WIDTH = 100
-HEIGHT = 100
+WIDTH = 110
+HEIGHT = 110
  
 # This sets the margin between each cell
 MARGIN = 5
@@ -52,8 +51,8 @@ import os
 main_dir = os.path.split(os.path.abspath(__file__))[0]
 data_dir = os.path.join(main_dir, 'data')
 
-goat = pygame.image.load('data/goat-100x100.png')
-water = pygame.image.load('data/water-100x95.png')
+goat = pygame.image.load('data/goat-84x100.png')
+water = pygame.image.load('data/water-100x80.png')
 rival = pygame.image.load('data/rival-72x100.png')
     
 while not done:
@@ -77,9 +76,9 @@ while not done:
                 if next_dir:
                     try:
                         current_farm.move(next_dir)
-                    except Exceptions.RivalError:
+                    except Rival.RivalCollision:
                         found = True
-                    except Exceptions.FountainError:
+                    except Fountain.FountainCollision:
                         won = True
      
         # Set the screen background
@@ -95,21 +94,21 @@ while not done:
                                   (MARGIN + HEIGHT) * row + MARGIN,
                                   WIDTH,
                                   HEIGHT])
-                if isinstance(current_farm._layout[row][column]._unit, Characters.Player):
-                    screen.blit(goat, [(MARGIN + WIDTH) * column + MARGIN,
-                                       (MARGIN + HEIGHT) * row + MARGIN,
+                if isinstance(current_farm._layout[row][column]._unit, Player.Player):
+                    screen.blit(goat, [(MARGIN + WIDTH) * column + MARGIN + (WIDTH - 84) / 2,
+                                       (MARGIN + HEIGHT) * row + MARGIN + (HEIGHT - 100) / 2,
                                        WIDTH,
                                        HEIGHT])
         if found:
             rival_loc = current_farm.find_rival()
             screen.blit(rival, [(MARGIN + WIDTH) * rival_loc[0] + MARGIN + (WIDTH - 72) / 2,
-                                (MARGIN + HEIGHT) * rival_loc[1] + MARGIN,
+                                (MARGIN + HEIGHT) * rival_loc[1] + MARGIN + (HEIGHT - 100) / 2,
                                 WIDTH,
                                 HEIGHT])   
         if won:
             fountain_loc = current_farm.find_fountain()
-            screen.blit(water, [(MARGIN + WIDTH) * fountain_loc[0] + MARGIN,
-                                (MARGIN + HEIGHT) * fountain_loc[1] + MARGIN + (HEIGHT - 95) / 2,
+            screen.blit(water, [(MARGIN + WIDTH) * fountain_loc[0] + MARGIN + (WIDTH - 100) / 2,
+                                (MARGIN + HEIGHT) * fountain_loc[1] + MARGIN + (HEIGHT - 80) / 2,
                                 WIDTH,
                                 HEIGHT])          
             if pygame.font:

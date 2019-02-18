@@ -1,4 +1,6 @@
-from . import Characters, Exceptions
+import Player
+import Fountain
+import Rival
 
 import numpy as np
 
@@ -37,9 +39,9 @@ class FarmMap(object):
         self._layout = np.array([FarmTile() for _ in range(9)]).reshape((3, 3))
         
         # Fill in layout
-        self._layout[self._start].update_unit(Characters.Player())
-        self._layout[(1, 1)].update_unit(Characters.Rival())
-        self._layout[self._end].update_unit(Characters.Fountain())
+        self._layout[self._start].update_unit(Player.Player())
+        self._layout[(1, 1)].update_unit(Rival.Rival())
+        self._layout[self._end].update_unit(Fountain.Fountain())
         self.outcome = None
     
     def __repr__(self):
@@ -57,17 +59,17 @@ class FarmMap(object):
         return self.__repr__()
         
     def find_player(self):
-        out_tuple_arrays = np.nonzero(contains_unit(self._layout, Characters.Player))
+        out_tuple_arrays = np.nonzero(contains_unit(self._layout, Player.Player))
         loc = tuple([a[0] for a in out_tuple_arrays])
         return(loc)
         
     def find_fountain(self):
-        out_tuple_arrays = np.nonzero(contains_unit(self._layout, Characters.Fountain))
+        out_tuple_arrays = np.nonzero(contains_unit(self._layout, Fountain.Fountain))
         loc = tuple([a[0] for a in out_tuple_arrays])
         return(loc)
         
     def find_rival(self):
-        out_tuple_arrays = np.nonzero(contains_unit(self._layout, Characters.Rival))
+        out_tuple_arrays = np.nonzero(contains_unit(self._layout, Rival.Rival))
         loc = tuple([a[0] for a in out_tuple_arrays])
         return(loc)
         
@@ -107,12 +109,12 @@ class FarmMap(object):
         if self._layout[new_tile]._unit is None:
             self._layout[new_tile].update_unit(self._layout[current_tile]._unit)
             self._layout[current_tile].update_unit(None)
-        elif isinstance(self._layout[new_tile]._unit, Characters.Fountain):
+        elif isinstance(self._layout[new_tile]._unit, Fountain.Fountain):
             self._layout[new_tile]._unit._discovered = True
-            raise Exceptions.FountainError()
-        elif isinstance(self._layout[new_tile]._unit, Characters.Rival):
+            raise Fountain.FountainCollision()
+        elif isinstance(self._layout[new_tile]._unit, Rival.Rival):
             self._layout[new_tile]._unit._discovered = True
-            raise Exceptions.RivalError()
+            raise Rival.RivalCollision()
         return            
         
 #x = FarmMap()
